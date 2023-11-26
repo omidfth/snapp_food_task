@@ -1,0 +1,13 @@
+package envKeys
+
+const (
+	PATH        = ".env"
+	DB_HOST     = "DB_HOST"
+	DB_PORT     = "DB_PORT"
+	DB_USERNAME = "DB_USERNAME"
+	DB_PASSWORD = "DB_PASSWORD"
+	DB_NAME     = "DB_NAME"
+	SERVER_HOST = "SERVER_HOST"
+	SERVER_PORT = "SERVER_PORT"
+	AMQP_SERVER = "AMQP_SERVER"
+)

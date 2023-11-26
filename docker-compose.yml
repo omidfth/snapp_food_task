@@ -1,0 +1,60 @@
+version: '3'
+services:
+  info-service:
+    build:
+      context: ./info
+      dockerfile: ./info_service.dockerfile
+    restart: always
+    ports:
+      - "8080:8080"
+    deploy:
+      mode: replicated
+      replicas: 1
+    depends_on:
+      - postgres
+      - rabbitmq
+  support-service:
+    build:
+      context: ./support
+      dockerfile: ./support_service.dockerfile
+    restart: always
+    ports:
+      - "3080:3080"
+    deploy:
+      mode: replicated
+      replicas: 1
+    depends_on:
+      - postgres
+      - rabbitmq
+      - redis
+  redis:
+    image: redis:6.2-alpine
+    restart: always
+    ports:
+      - "6379:6379"
+    command: redis-server --save 20 1 --loglevel warning
+    volumes:
+      - ./docker-conf/redis/data/:/data
+  postgres:
+    image: 'postgres:14.0'
+    ports:
+      - "5432:5432"
+    restart: always
+    deploy:
+      mode: replicated
+      replicas: 1
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 121
+    volumes:
+      - ./docker-conf/postgres/:/var/lib/postgresql/data/
+      - ./docker-conf/docker_postgres_init.sql:/docker-entrypoint-initdb.d/docker_postgres_init.sql
+  rabbitmq:
+    image: rabbitmq:3.8-management-alpine
+    container_name: 'rabbitmq'
+    ports:
+      - "5673:5672"
+      - "15673:15672"
+    volumes:
+      - ./docker-conf/rabbitmq/data/:/var/lib/rabbitmq/
+      - ./docker-conf/rabbitmq/log/:/var/log/rabbitmq
